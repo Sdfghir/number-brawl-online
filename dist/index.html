@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1020" />
+    <link rel="icon" href="data:," />
+    <title>数字乱斗 · 高清 Q 版</title>
+    <script type="module" crossorigin src="/assets/index-BrXuk_5b.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BBhS9_fz.css">
+  </head>
+  <body>
+    <div id="game"></div>
+    <div id="hit-flash"></div>
+    <div id="hud">
+      <div class="brand">数字乱斗 <small>高清 Q 版</small></div>
+      <button id="audio-toggle" type="button" aria-pressed="true">🔊 声音开</button>
+      <div class="stats">
+        <div><span>你的数字</span><strong id="player-number">10</strong></div>
+        <div><span>武器</span><strong id="weapon">棍棒</strong></div>
+        <div><span>剩余时间</span><strong id="timer">03:00</strong></div>
+      </div>
+      <div id="message"></div>
+      <div id="leader-hud">
+        <span id="leader-arrow">▲</span>
+        <div><small>当前第一</small><strong id="leader-text">尚未产生</strong></div>
+      </div>
+      <div id="respawn-hud">重生倒计时 <strong id="respawn-time">3.0</strong></div>
+      <div class="controls">
+        <b>WASD</b> 移动　<b>鼠标</b> 瞄准　<b>近战</b> 自动　<b>左键</b> 射击 / 选落点　<b>Shift</b> 强化冲刺
+      </div>
+    </div>
+    <div id="start-screen">
+      <div class="card">
+        <div class="eyebrow">俯视角 · 高清 Q 版分层动画</div>
+        <h1>数字乱斗</h1>
+        <p>15 人同时乱斗。鼠标控制朝向，近战自动挥动你选择的武器；捡枪后用鼠标左键开火或选择落点，墙体能够阻挡人物和攻击。</p>
+        <div class="customizer">
+          <div class="preview-pane">
+            <canvas id="avatar-preview" width="230" height="300"></canvas>
+            <strong>你的搭配</strong>
+            <small id="custom-status">点击任意部件，左侧实时组合</small>
+          </div>
+          <div class="custom-controls">
+            <div class="item-row">
+              <span>衣服款式</span>
+              <div class="item-options five" data-custom="outfit">
+                <button class="item-option" data-value="none"><b>💪</b>赤膊上身</button>
+                <button class="item-option" data-value="tshirt"><b>👕</b>T恤</button>
+                <button class="item-option" data-value="jacket"><b>🧥</b>夹克</button>
+                <button class="item-option selected" data-value="hoodie"><b>🧶</b>卫衣</button>
+                <button class="item-option" data-value="vest"><b>🦺</b>背心</button>
+                <button class="item-option" data-value="armor"><b>🛡️</b>护甲</button>
+                <button class="item-option" data-value="suit"><b>👔</b>西装</button>
+                <button class="item-option" data-value="trench"><b>🧥</b>风衣</button>
+                <button class="item-option" data-value="jersey"><b>🏀</b>球衣</button>
+                <button class="item-option" data-value="robe"><b>🥋</b>战袍</button>
+                <button class="item-option" data-value="bomber"><b>🛩️</b>飞行服</button>
+                <button class="item-option" data-value="samurai"><b>⚔️</b>武士甲</button>
+                <button class="item-option" data-value="ranger"><b>🏹</b>游侠服</button>
+                <button class="item-option" data-value="pirate"><b>🏴‍☠️</b>海盗装</button>
+                <button class="item-option" data-value="street"><b>🛹</b>街头装</button>
+                <button class="item-option" data-value="ceremonial"><b>🏅</b>礼仪甲</button>
+                <button class="item-option" data-value="ninja"><b>🥷</b>忍者服</button>
+                <button class="item-option" data-value="knight"><b>🛡️</b>骑士战衣</button>
+                <button class="item-option" data-value="tracksuit"><b>🏃</b>运动套装</button>
+                <button class="item-option" data-value="academy"><b>🎓</b>学院制服</button>
+                <button class="item-option" data-value="winter"><b>🧣</b>冬日大衣</button>
+                <button class="item-option" data-value="cyber"><b>💠</b>赛博战衣</button>
+                <button class="item-option" data-value="monk"><b>📿</b>武僧服</button>
+                <button class="item-option" data-value="dragon"><b>🐉</b>龙纹甲</button>
+              </div>
+            </div>
+            <div class="item-row">
+              <span>帽子 / 发型</span>
+              <div class="item-options five" data-custom="hair">
+                <button class="item-option selected" data-value="short"><b>💇</b>短发</button>
+                <button class="item-option" data-value="cap"><b>🧢</b>棒球帽</button>
+                <button class="item-option" data-value="spiky"><b>⚡</b>尖发</button>
+                <button class="item-option" data-value="long"><b>🎀</b>长发</button>
+                <button class="item-option" data-value="beanie"><b>🧶</b>毛线帽</button>
+                <button class="item-option" data-value="mohawk"><b>🪶</b>莫西干</button>
+                <button class="item-option" data-value="cowboy"><b>🤠</b>牛仔帽</button>
+                <button class="item-option" data-value="ponytail"><b>🎗️</b>马尾</button>
+                <button class="item-option" data-value="helmet"><b>⛑️</b>头盔</button>
+                <button class="item-option" data-value="motorcycleHelmet"><b>🏍️</b>摩托全盔</button>
+                <button class="item-option" data-value="racingHelmet"><b>🏁</b>竞速全盔</button>
+                <button class="item-option" data-value="spaceHelmet"><b>🧑‍🚀</b>宇航头盔</button>
+                <button class="item-option" data-value="mechaHelmet"><b>🤖</b>机甲面甲</button>
+                <button class="item-option" data-value="riotHelmet"><b>🛡️</b>防暴全盔</button>
+                <button class="item-option" data-value="wizard"><b>🧙</b>法师帽</button>
+                <button class="item-option" data-value="headphones"><b>🎧</b>耳机</button>
+                <button class="item-option" data-value="crown"><b>👑</b>皇冠</button>
+                <button class="item-option" data-value="braid"><b>🪢</b>编发</button>
+                <button class="item-option" data-value="bandana"><b>🧣</b>头巾</button>
+                <button class="item-option" data-value="hood"><b>🥷</b>兜帽</button>
+                <button class="item-option" data-value="goggles"><b>🥽</b>护目镜</button>
+                <button class="item-option" data-value="catEars"><b>🐱</b>猫耳</button>
+                <button class="item-option" data-value="horns"><b>😈</b>弯角</button>
+                <button class="item-option" data-value="halo"><b>😇</b>光环</button>
+                <button class="item-option" data-value="beret"><b>🎨</b>贝雷帽</button>
+                <button class="item-option" data-value="officer"><b>🧑‍✈️</b>军官帽</button>
+                <button class="item-option" data-value="undercut"><b>✂️</b>渐层短发</button>
+                <button class="item-option" data-value="curly"><b>🌀</b>蓬松卷发</button>
+                <button class="item-option" data-value="sidepart"><b>✨</b>帅气侧分</button>
+                <button class="item-option" data-value="samuraiBun"><b>🎋</b>武士发髻</button>
+                <button class="item-option" data-value="fedora"><b>🎩</b>绅士礼帽</button>
+                <button class="item-option" data-value="bucket"><b>⛱️</b>渔夫帽</button>
+                <button class="item-option" data-value="aviator"><b>🛩️</b>飞行帽</button>
+                <button class="item-option" data-value="foxEars"><b>🦊</b>狐耳</button>
+              </div>
+            </div>
+            <div class="item-row">
+              <span>裤子款式</span>
+              <div class="item-options five" data-custom="pantsStyle">
+                <button class="item-option" data-value="none"><b>🦵</b>赤裸下身</button>
+                <button class="item-option selected" data-value="pants"><b>👖</b>长裤</button>
+                <button class="item-option" data-value="cargo"><b>🧰</b>工装裤</button>
+                <button class="item-option" data-value="shorts"><b>🩳</b>短裤</button>
+                <button class="item-option" data-value="striped"><b>🦓</b>条纹裤</button>
+                <button class="item-option" data-value="guard"><b>🛡️</b>护膝裤</button>
+                <button class="item-option" data-value="jeans"><b>🧵</b>牛仔裤</button>
+                <button class="item-option" data-value="joggers"><b>🏃</b>束脚裤</button>
+                <button class="item-option" data-value="camo"><b>🌿</b>迷彩裤</button>
+                <button class="item-option" data-value="formal"><b>🎩</b>西裤</button>
+                <button class="item-option" data-value="tech"><b>🤖</b>机甲裤</button>
+                <button class="item-option" data-value="samurai"><b>⚔️</b>甲胄裤</button>
+                <button class="item-option" data-value="leather"><b>🟤</b>皮裤</button>
+                <button class="item-option" data-value="plated"><b>🛡️</b>板甲裤</button>
+                <button class="item-option" data-value="loose"><b>🥋</b>宽腿裤</button>
+                <button class="item-option" data-value="royal"><b>✨</b>皇家裤</button>
+                <button class="item-option" data-value="tactical"><b>🎒</b>战术裤</button>
+                <button class="item-option" data-value="ninja"><b>🥷</b>束腿裤</button>
+                <button class="item-option" data-value="explorer"><b>🧭</b>探险裤</button>
+                <button class="item-option" data-value="winter"><b>❄️</b>保暖裤</button>
+                <button class="item-option" data-value="cyber"><b>💠</b>霓光裤</button>
+                <button class="item-option" data-value="dragon"><b>🐉</b>龙纹裤</button>
+              </div>
+            </div>
+            <div class="item-row">
+              <span>鞋子款式</span>
+              <div class="item-options five" data-custom="shoesStyle">
+                <button class="item-option" data-value="none"><b>🦶</b>赤脚</button>
+                <button class="item-option selected" data-value="sneakers"><b>👟</b>球鞋</button>
+                <button class="item-option" data-value="boots"><b>🥾</b>靴子</button>
+                <button class="item-option" data-value="high"><b>👞</b>高帮</button>
+                <button class="item-option" data-value="sandals"><b>🩴</b>内袜凉鞋</button>
+                <button class="item-option" data-value="neon"><b>✨</b>霓虹鞋</button>
+                <button class="item-option" data-value="running"><b>🏃</b>跑鞋</button>
+                <button class="item-option" data-value="leather"><b>👞</b>皮鞋</button>
+                <button class="item-option" data-value="combat"><b>🥾</b>战靴</button>
+                <button class="item-option" data-value="canvas"><b>👟</b>帆布鞋</button>
+                <button class="item-option" data-value="gold"><b>🌟</b>金靴</button>
+                <button class="item-option" data-value="greaves"><b>🛡️</b>护胫靴</button>
+                <button class="item-option" data-value="ninja"><b>🥷</b>忍者鞋</button>
+                <button class="item-option" data-value="hiking"><b>⛰️</b>登山靴</button>
+                <button class="item-option" data-value="royal"><b>👑</b>皇家靴</button>
+                <button class="item-option" data-value="techboots"><b>💠</b>动力靴</button>
+              </div>
+            </div>
+            <div class="item-row">
+              <span>近战武器</span>
+              <div class="item-options four" data-custom="meleeStyle">
+                <button class="item-option selected" data-value="club"><b>🪵</b>木棍</button>
+                <button class="item-option" data-value="sword"><b>🗡️</b>长刀</button>
+                <button class="item-option" data-value="axe"><b>🪓</b>战斧</button>
+                <button class="item-option" data-value="dagger"><b>🔪</b>小刀</button>
+                <button class="item-option" data-value="hammer"><b>🔨</b>战锤</button>
+                <button class="item-option" data-value="spear"><b>🔱</b>长矛</button>
+                <button class="item-option" data-value="katana"><b>⚔️</b>武士刀</button>
+                <button class="item-option" data-value="mace"><b>☄️</b>钉头锤</button>
+                <button class="item-option" data-value="scythe"><b>🌙</b>镰刀</button>
+                <button class="item-option" data-value="staff"><b>🪄</b>法杖</button>
+                <button class="item-option" data-value="cleaver"><b>🔪</b>大砍刀</button>
+                <button class="item-option" data-value="rapier"><b>🤺</b>细剑</button>
+                <button class="item-option" data-value="chickenLeg"><b>🍗</b>超大鸡腿</button>
+                <button class="item-option" data-value="pickaxe"><b>⛏️</b>镐头</button>
+                <button class="item-option" data-value="shovel"><b>🪏</b>铁锹</button>
+                <button class="item-option" data-value="greatClub"><b>🪵</b>超粗大棒</button>
+              </div>
+            </div>
+            <div class="color-grid">
+              <div class="color-choice">
+                <span>衣服颜色</span>
+                <div class="swatches" data-custom="shirt">
+                  <button class="swatch selected" data-value="#51d9ff" style="--swatch:#51d9ff" aria-label="蓝色"></button>
+                  <button class="swatch" data-value="#ff6577" style="--swatch:#ff6577" aria-label="红色"></button>
+                  <button class="swatch" data-value="#62e29a" style="--swatch:#62e29a" aria-label="绿色"></button>
+                  <button class="swatch" data-value="#b982ff" style="--swatch:#b982ff" aria-label="紫色"></button>
+                  <button class="swatch" data-value="#ffc857" style="--swatch:#ffc857" aria-label="黄色"></button>
+                  <button class="swatch" data-value="#ff8f45" style="--swatch:#ff8f45" aria-label="橙色"></button>
+                  <button class="swatch" data-value="#e8eef5" style="--swatch:#e8eef5" aria-label="白色"></button>
+                  <button class="swatch" data-value="#303746" style="--swatch:#303746" aria-label="黑色"></button>
+                  <button class="swatch" data-value="#ff4fc3" style="--swatch:#ff4fc3" aria-label="玫红"></button>
+                  <button class="swatch" data-value="#26d8c7" style="--swatch:#26d8c7" aria-label="青绿"></button>
+                  <button class="swatch" data-value="#7b4b2a" style="--swatch:#7b4b2a" aria-label="棕色"></button>
+                  <button class="swatch" data-value="#163a78" style="--swatch:#163a78" aria-label="藏蓝"></button>
+                </div>
+              </div>
+              <div class="color-choice">
+                <span>裤子颜色</span>
+                <div class="swatches" data-custom="pants">
+                  <button class="swatch selected" data-value="#253248" style="--swatch:#253248" aria-label="深蓝"></button>
+                  <button class="swatch" data-value="#563b73" style="--swatch:#563b73" aria-label="紫色"></button>
+                  <button class="swatch" data-value="#345443" style="--swatch:#345443" aria-label="绿色"></button>
+                  <button class="swatch" data-value="#6a4432" style="--swatch:#6a4432" aria-label="棕色"></button>
+                  <button class="swatch" data-value="#151a24" style="--swatch:#151a24" aria-label="黑色"></button>
+                  <button class="swatch" data-value="#b79b68" style="--swatch:#b79b68" aria-label="沙色"></button>
+                  <button class="swatch" data-value="#e7edf5" style="--swatch:#e7edf5" aria-label="白色"></button>
+                  <button class="swatch" data-value="#c8434f" style="--swatch:#c8434f" aria-label="红色"></button>
+                  <button class="swatch" data-value="#236aa8" style="--swatch:#236aa8" aria-label="蓝色"></button>
+                  <button class="swatch" data-value="#c69b34" style="--swatch:#c69b34" aria-label="金色"></button>
+                </div>
+              </div>
+              <div class="color-choice">
+                <span>鞋子颜色</span>
+                <div class="swatches" data-custom="shoes">
+                  <button class="swatch selected" data-value="#18202c" style="--swatch:#18202c" aria-label="黑色"></button>
+                  <button class="swatch" data-value="#f3f6fa" style="--swatch:#f3f6fa" aria-label="白色"></button>
+                  <button class="swatch" data-value="#ff784e" style="--swatch:#ff784e" aria-label="橙色"></button>
+                  <button class="swatch" data-value="#58e0b2" style="--swatch:#58e0b2" aria-label="绿色"></button>
+                  <button class="swatch" data-value="#5c8dff" style="--swatch:#5c8dff" aria-label="蓝色"></button>
+                  <button class="swatch" data-value="#c27cff" style="--swatch:#c27cff" aria-label="紫色"></button>
+                  <button class="swatch" data-value="#ffd052" style="--swatch:#ffd052" aria-label="金色"></button>
+                  <button class="swatch" data-value="#ff5d88" style="--swatch:#ff5d88" aria-label="粉色"></button>
+                  <button class="swatch" data-value="#8b5a38" style="--swatch:#8b5a38" aria-label="棕色"></button>
+                  <button class="swatch" data-value="#242a36" style="--swatch:#242a36" aria-label="深灰"></button>
+                </div>
+              </div>
+              <div class="color-choice">
+                <span>头发颜色</span>
+                <div class="swatches" data-custom="hairColor">
+                  <button class="swatch selected" data-value="#4b2a1c" style="--swatch:#4b2a1c" aria-label="棕发"></button>
+                  <button class="swatch" data-value="#161b24" style="--swatch:#161b24" aria-label="黑发"></button>
+                  <button class="swatch" data-value="#e4c06a" style="--swatch:#e4c06a" aria-label="金发"></button>
+                  <button class="swatch" data-value="#dce8f2" style="--swatch:#dce8f2" aria-label="银发"></button>
+                  <button class="swatch" data-value="#b84e4e" style="--swatch:#b84e4e" aria-label="红发"></button>
+                  <button class="swatch" data-value="#526fd8" style="--swatch:#526fd8" aria-label="蓝发"></button>
+                  <button class="swatch" data-value="#854fc7" style="--swatch:#854fc7" aria-label="紫发"></button>
+                  <button class="swatch" data-value="#32a979" style="--swatch:#32a979" aria-label="绿发"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="online-panel">
+          <div class="online-heading">
+            <div><strong>多人联机房间</strong><small>真人会自动替换人机，始终保持15人</small></div>
+            <span id="online-status" data-state="offline">单人模式</span>
+          </div>
+          <div class="online-actions">
+            <label class="online-name"><span>你的名字</span><input id="online-name" maxlength="10" value="玩家" autocomplete="nickname"></label>
+            <button id="create-room-button" type="button">创建房间</button>
+            <label class="room-code-input"><span>邀请码</span><input id="room-code-input" maxlength="6" placeholder="6位邀请码" autocomplete="off"></label>
+            <button id="join-room-button" type="button">加入房间</button>
+          </div>
+          <div id="room-info" class="hidden">
+            <div class="room-code-line"><span>房间邀请码</span><strong id="room-code-display">------</strong><button id="copy-invite-button" type="button">复制邀请链接</button></div>
+            <div id="room-player-count">1名真人 + 14名人机</div>
+            <div id="room-roster"></div>
+            <button id="leave-room-button" type="button">退出房间</button>
+          </div>
+        </div>
+        <button id="start-button">单人开局</button>
+        <div class="tip">从数字 20 起，每档速度、转身和攻速降 10%，攻击范围与体型增 10%；达到 30 后按住 Shift，可暂时恢复前两个档位的全部属性与体型。</div>
+      </div>
+    </div>
+    <div id="result-screen" class="hidden" aria-live="polite">
+      <div class="result-card">
+        <div class="result-glow"></div>
+        <div class="result-eyebrow">本局结算</div>
+        <div class="result-crown" aria-hidden="true">♛</div>
+        <h1 id="result-title">本局结束</h1>
+        <p id="result-summary"></p>
+        <div class="result-content">
+          <div class="result-player">
+            <canvas id="result-avatar" width="320" height="320"></canvas>
+            <span>你的最终成绩</span>
+            <strong id="result-player-rank">第 1 名</strong>
+            <em id="result-player-number">数字 10</em>
+          </div>
+          <div class="result-ranking">
+            <div class="result-ranking-title"><span>最终排行榜</span><small>全员 15 人</small></div>
+            <div id="result-ranking-list"></div>
+          </div>
+        </div>
+        <button id="rematch-button">再来一局</button>
+        <div class="result-tip">争夺掉落数字、寻找绕后机会，下一局冲击第一。</div>
+      </div>
+    </div>
+  </body>
+</html>

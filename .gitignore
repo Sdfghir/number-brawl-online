@@ -1,0 +1,4 @@
+node_modules/
+server-error.log
+*.zip
+.DS_Store
