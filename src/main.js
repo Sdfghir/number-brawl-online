@@ -3575,8 +3575,12 @@ class Fighter {
     return 1 / this.attacksPerSecond;
   }
 
-  refreshAvatarSprite(pose = this.avatarPose, forceImmediate = false, prewarmGpu = false) {
+  refreshAvatarSprite(pose = this.avatarPose, forceImmediate = false, prewarmGpu = false, weaponTypeOverride = undefined) {
     if (!this.avatarSprite || this.suspendAvatarRefresh) return;
+    // Prewarming must never mutate the fighter's real weapon state. Rapidly
+    // changing cosmetics used to interrupt a prewarm while weaponType was set
+    // to a temporary gun, making the selected melee weapon appear as a gun.
+    const renderedWeaponType = weaponTypeOverride === undefined ? this.weaponType : weaponTypeOverride;
     const appearance = {
       shirtColor: this.shirtMaterial.color,
       pantsColor: this.pantsMaterial.color,
@@ -3587,7 +3591,7 @@ class Fighter {
       outfitStyle: this.outfitStyle,
       pantsStyle: this.pantsStyle,
       shoesStyle: this.shoesStyle,
-      weaponType: this.weaponType,
+      weaponType: renderedWeaponType,
       meleeWeapon: this.meleeWeapon,
       meleeStyle: this.meleeStyle
     };
@@ -3612,7 +3616,7 @@ class Fighter {
     }
     const appearanceKey = [
       baseKey,
-      this.weaponType || 'melee', this.meleeWeapon, this.meleeStyle,
+      renderedWeaponType || 'melee', this.meleeWeapon, this.meleeStyle,
       pose.mode, pose.walkPhase, pose.attackPhase, pose.recoil, pose.spin
     ].join('|');
     const applyAvatarTexture = (texture) => {
@@ -4247,12 +4251,8 @@ function schedulePlayerAvatarPrewarm() {
       { mode: 'fire', walkPhase: 0, attackPhase: -1, recoil: 1, spin: 0 }
     ].map((pose) => ({ weaponType, pose })));
     const tasks = [...meleeTasks, ...gunTasks];
-    const originalWeaponType = player.weaponType;
-    const originalAmmo = player.ammo;
     let index = 0;
     const restorePlayerWeapon = () => {
-      player.weaponType = originalWeaponType;
-      player.ammo = originalAmmo;
       player.refreshAvatarSprite({ mode: 'idle', walkPhase: 0, attackPhase: -1, recoil: 0, spin: 0 });
       rebuildAvatarPreview();
       playerPrewarmReady = true;
@@ -4266,12 +4266,14 @@ function schedulePlayerAvatarPrewarm() {
       ? (callback) => window.requestIdleCallback(callback, { timeout: 30 })
       : (callback) => setTimeout(() => callback(), 8);
     const warmNext = () => {
-      if (running || token !== playerPrewarmToken) return;
+      if (token !== playerPrewarmToken) return;
+      if (running) {
+        restorePlayerWeapon();
+        return;
+      }
       for (let batch = 0; batch < 2 && index < tasks.length; batch += 1) {
         const task = tasks[index++];
-        player.weaponType = task.weaponType;
-        player.ammo = task.weaponType ? 1 : 0;
-        player.refreshAvatarSprite(task.pose, false, true);
+        player.refreshAvatarSprite(task.pose, false, true, task.weaponType);
       }
       if (index < tasks.length) schedule(warmNext);
       else restorePlayerWeapon();
@@ -4291,29 +4293,30 @@ function scheduleBotAvatarPrewarm() {
     ...meleePoses.map((pose) => ({ fighter, weaponType: null, pose })),
     ...['smg', 'sniper', 'rocket'].map((weaponType) => ({ fighter, weaponType, pose: gunIdlePose }))
   ]);
+  const restoreBotWeapons = () => fighters.slice(1).forEach((fighter) => {
+    fighter.refreshAvatarSprite({ mode: 'idle', walkPhase: 0, attackPhase: -1, recoil: 0, spin: 0 });
+  });
   let taskIndex = 0;
   const idleSchedule = window.requestIdleCallback
     ? (callback) => window.requestIdleCallback(callback, { timeout: 28 })
     : (callback) => setTimeout(() => callback({ timeRemaining: () => 8 }), 8);
   const warmNext = (deadline) => {
-    if (token !== avatarPrewarmToken || running) return;
+    if (token !== avatarPrewarmToken) return;
+    if (running) {
+      restoreBotWeapons();
+      return;
+    }
     let processed = 0;
     // Prepare a small fixed batch even when the idle callback reached its
     // timeout. Otherwise only one frame was produced every ~450 ms and quick
     // starts pushed expensive canvas/texture creation into live combat.
     while (taskIndex < tasks.length && processed < 4) {
       const { fighter, weaponType, pose } = tasks[taskIndex++];
-      fighter.weaponType = weaponType;
-      fighter.ammo = weaponType ? 1 : 0;
-      fighter.refreshAvatarSprite(pose, false, true);
+      fighter.refreshAvatarSprite(pose, false, true, weaponType);
       processed += 1;
     }
     if (taskIndex < tasks.length) idleSchedule(warmNext);
-    else fighters.slice(1).forEach((fighter) => {
-      fighter.weaponType = null;
-      fighter.ammo = 0;
-      fighter.refreshAvatarSprite({ mode: 'idle', walkPhase: 0, attackPhase: -1, recoil: 0, spin: 0 });
-    });
+    else restoreBotWeapons();
   };
   idleSchedule(warmNext);
 }
@@ -4321,8 +4324,6 @@ function scheduleBotAvatarPrewarm() {
 function scheduleRemoteFighterAvatarPrewarm(fighter) {
   const token = (fighter.networkPrewarmToken || 0) + 1;
   fighter.networkPrewarmToken = token;
-  const originalWeaponType = fighter.weaponType;
-  const originalAmmo = fighter.ammo;
   const meleePoses = [
     { mode: 'idle', walkPhase: 0, attackPhase: -1, recoil: 0, spin: 0 },
     ...Array.from({ length: 3 }, (_, index) => ({ mode: 'walk', walkPhase: (index + 0.5) / 3, attackPhase: -1, recoil: 0, spin: 0 })),
@@ -4337,23 +4338,20 @@ function scheduleRemoteFighterAvatarPrewarm(fighter) {
   ];
   let taskIndex = 0;
   const restore = () => {
-    fighter.weaponType = originalWeaponType;
-    fighter.ammo = originalAmmo;
     fighter.refreshAvatarSprite({ mode: 'idle', walkPhase: 0, attackPhase: -1, recoil: 0, spin: 0 });
   };
   const schedule = window.requestIdleCallback
     ? (callback) => window.requestIdleCallback(callback, { timeout: 30 })
     : (callback) => setTimeout(callback, 8);
   const warmNext = () => {
-    if (fighter.networkPrewarmToken !== token || running) {
+    if (fighter.networkPrewarmToken !== token) return;
+    if (running) {
       restore();
       return;
     }
     for (let batch = 0; batch < 4 && taskIndex < tasks.length; batch += 1) {
       const task = tasks[taskIndex++];
-      fighter.weaponType = task.weaponType;
-      fighter.ammo = task.weaponType ? 1 : 0;
-      fighter.refreshAvatarSprite(task.pose, false, true);
+      fighter.refreshAvatarSprite(task.pose, false, true, task.weaponType);
     }
     if (taskIndex < tasks.length) schedule(warmNext);
     else restore();
@@ -5601,6 +5599,16 @@ if (new URLSearchParams(location.search).has('qa')) {
         textureSize: player.avatarSprite.material.map
           ? [player.avatarSprite.material.map.image.width, player.avatarSprite.material.map.image.height]
           : null
+      };
+    },
+    weaponPrewarmState() {
+      return {
+        ready: playerPrewarmReady,
+        fighters: fighters.map((fighter) => ({
+          weaponType: fighter.weaponType,
+          ammo: fighter.ammo,
+          meleeStyle: fighter.meleeStyle
+        }))
       };
     },
     setPlayerYaw(value) {
