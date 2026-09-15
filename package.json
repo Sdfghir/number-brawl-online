@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
     "start": "node multiplayer-server.mjs --no-open",
-    "start:local": "node multiplayer-server.mjs"
+    "start:local": "node multiplayer-server.mjs",
+    "deploy:cloudflare": "wrangler deploy",
+    "dev:cloudflare": "wrangler dev"
   },
   "engines": {
     "node": ">=20"
@@ -17,6 +19,7 @@
     "three": "^0.179.1"
   },
   "devDependencies": {
-    "vite": "^7.1.3"
+    "vite": "^7.1.3",
+    "wrangler": "^4.0.0"
   }
 }

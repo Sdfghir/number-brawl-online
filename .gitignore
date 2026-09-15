@@ -1,4 +1,5 @@
 node_modules/
+.wrangler/
 server-error.log
 *.zip
 .DS_Store
